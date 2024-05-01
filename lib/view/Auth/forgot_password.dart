@@ -55,103 +55,114 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: kIsWeb ? null : AppBar(
-        title: const Text(
-          "Forgot Password",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(Icons.arrow_back_ios),
-          color: Colors.black,
-        ),
-      ),
+      appBar: kIsWeb
+          ? null
+          : AppBar(
+              title: const Text(
+                "Forgot Password",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              centerTitle: true,
+              backgroundColor: Colors.white,
+              elevation: 0,
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.arrow_back_ios),
+                color: Colors.black,
+              ),
+            ),
       body: contentBox(context),
     );
   }
 
   contentBox(context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    var size = MediaQuery.of(context).size;
+    return Stack(
       children: [
-        Container(
-          height: kIsWeb ? 800 :800.h,
-          width: kIsWeb ? 380 : 360.w,
-          padding: EdgeInsets.all(15.sp),
-          margin: EdgeInsets.only(top: 10.sp),
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              SizedBox(height: 50.h),
-              SizedBox(
-                height: kIsWeb ? null : 180.h,
-                child: Image.asset("assets/plane.jpg"),
+        if (size.width >= 900)
+          Image.asset("assets/home.jpg",
+              fit: BoxFit.cover, height: size.height, width: size.width),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Spacer(flex: size.width >= 900 ? 4 : 1),
+            Container(
+              height: kIsWeb ? 800 : 800.h,
+              width: kIsWeb ? 380 : 360.w,
+              padding: EdgeInsets.all(15.sp),
+              margin: EdgeInsets.only(top: 10.sp),
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(30),
               ),
-              SizedBox(height: 30.h),
-              Text(
-                "Enter your email",
-                style: TextStyle(
-                    fontSize: 18.sp,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SizedBox(height: 50.h),
+                  SizedBox(
+                    height: kIsWeb ? null : 180.h,
+                    child: Image.asset("assets/plane.png"),
+                  ),
+                  SizedBox(height: 30.h),
+                  Text(
+                    "Enter your email",
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "to receive a reset link",
+                    style: TextStyle(
+                        fontSize: 12.sp, color: Colors.black.withOpacity(0.5)),
+                  ),
+                  SizedBox(height: 30.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    child: Form(
+                      key: _formKey,
+                      child: customTextField(
+                          emailController, "Enter your email", context,
+                          iconData: Icons.remove_red_eye),
+                    ),
+                  ),
+                  SizedBox(height: 30.h),
+                  Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: GestureDetector(
+                      onTap: () {
+                        validate(context);
+                      },
+                      child: customButton("Send"),
+                    ),
+                  ),
+                  SizedBox(height: 30.h),
+                  Text(
+                    "Didn’t receive any link?",
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 7.h),
+                  Text(
+                    "Please check in spam or send again",
+                    style: TextStyle(
+                        fontSize: 13.sp, color: Colors.black.withOpacity(0.5)),
+                  ),
+                  SizedBox(height: 50.h),
+                ],
               ),
-              Text(
-                "to receive a reset link",
-                style: TextStyle(
-                    fontSize: 12.sp, color: Colors.black.withOpacity(0.5)),
-              ),
-              SizedBox(height: 30.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                child: Form(
-                  key: _formKey,
-                  child: customTextField(
-                      emailController, "Enter your email", context,
-                      iconData: Icons.remove_red_eye),
-                ),
-              ),
-
-              SizedBox(height: 30.h),
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: GestureDetector(
-                  onTap: () {
-                    validate(context);
-                  },
-                  child: customButton("Send"),
-                ),
-              ),
-              SizedBox(height: 30.h),
-              Text(
-                "Didn’t receive any link?",
-                style: TextStyle(
-                    fontSize: 16.sp,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 7.h),
-              Text(
-                "Please check in spam or send again",
-                style: TextStyle(
-                    fontSize: 13.sp, color: Colors.black.withOpacity(0.5)),
-              ),
-              SizedBox(height: 50.h),
-            ],
-          ),
+            ),
+            Spacer(),
+          ],
         ),
       ],
     );

@@ -1,3 +1,4 @@
+import 'package:assessment_3/provider/drawerProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => Authentication()),
+        ChangeNotifierProvider(create: (_) => DrawerProvider()),
 
       ],
       child: ScreenUtilInit(

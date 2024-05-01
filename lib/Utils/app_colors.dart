@@ -5,6 +5,12 @@ import 'package:flutter/material.dart';
  const primaryColor = Color(0xff153448);
 const secondaryColor = Color(0xff3C5B6F);
 
+
+Color light = Color(0xFFF7F8FC);
+Color lightGrey = Color(0xFFA4A6B3);
+Color dark = primaryColor;
+Color active = Color(0xFF3C19C0);
+
 final Map<int, Color> _yellow700Map = {
   50:  primaryColor.withOpacity(0.1),
   100:  primaryColor.withOpacity(0.2),

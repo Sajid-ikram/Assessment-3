@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../Provider/auth_provider.dart';
 import '../../Utils/custom_loading.dart';
+import '../../view_web/layouts/screen_divider.dart';
 import 'forgot_password.dart';
 
 class SignIn extends StatefulWidget {
@@ -58,72 +59,86 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
         children: [
-          SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: SizedBox(
-              height: kIsWeb ? 800 :790.h,
-              width: kIsWeb ? 380 : 360.w,
-              child: Padding(
-                padding: EdgeInsets.all(30.sp),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 45.h),
-                    Image.asset("assets/plane.jpg"),
-                    const Spacer(),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          customTextField(
-                              emailController, "Enter your email", context),
-                          SizedBox(height: 25.h),
-                          customTextField(passwordController, "Password", context,
-                              iconData: Icons.remove_red_eye),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 17.h),
-                    switchPageButton("New Member? ", "Register now", context),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        validate();
-                      },
-                      child: customButton("SignIn"),
-                    ),
-                    SizedBox(height: 40.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+          if (size.width >= 900)
+            Image.asset("assets/home.jpg",
+                fit: BoxFit.cover, height: size.height, width: size.width),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Spacer(
+                flex: size.width >= 900 ? 4 : 1
+              ),
+              SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: SizedBox(
+                  height: kIsWeb ? 800 : 790.h,
+                  width: kIsWeb ? 380 : 360.w,
+                  child: Padding(
+                    padding: EdgeInsets.all(30.sp),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const CustomDialogBox(),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            "Forgot Password?",
-                            style: TextStyle(
-                              fontSize: kIsWeb ? 13 :12.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Theme.of(context).primaryColor,
-                            ),
+                        SizedBox(height: 45.h),
+                        Image.asset("assets/plane.png"),
+                        const Spacer(),
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              customTextField(
+                                  emailController, "Enter your email", context),
+                              SizedBox(height: 25.h),
+                              customTextField(
+                                  passwordController, "Password", context,
+                                  iconData: Icons.remove_red_eye),
+                            ],
                           ),
                         ),
+                        SizedBox(height: 17.h),
+                        switchPageButton(
+                            "New Member? ", "Register now", context),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () {
+                            validate();
+                          },
+                          child: customButton("SignIn"),
+                        ),
+                        SizedBox(height: 40.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const CustomDialogBox(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Forgot Password?",
+                                style: TextStyle(
+                                  fontSize: kIsWeb ? 13 : 12.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.h),
                       ],
                     ),
-                    SizedBox(height: 10.h),
-                  ],
+                  ),
                 ),
               ),
-            ),
+              Spacer(),
+            ],
           ),
         ],
       ),

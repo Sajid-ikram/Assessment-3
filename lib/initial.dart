@@ -1,5 +1,6 @@
 import 'package:assessment_3/View/Auth/signin.dart';
 import 'package:assessment_3/View/home/home.dart';
+import 'package:assessment_3/view_web/layouts/screen_divider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class _MiddleOfHomeAndSignInState extends State<MiddleOfHomeAndSignIn> {
           return buildLoadingWidget();
         }
         if (snapshot.data != null && snapshot.data!.emailVerified) {
-          return const Home();
+          return  SiteLayout();
         }
         return snapshot.data == null
             ? const SignIn()

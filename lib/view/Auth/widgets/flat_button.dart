@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,7 @@ Widget flatButton({required String name, double? height, double? width}) {
         Text(
           name,
           style: TextStyle(
-              fontSize: 13.sp,
+              fontSize:  kIsWeb ? 13 :13.sp,
               color: Colors.white,
               fontWeight: FontWeight.w700),
         ),
@@ -27,7 +28,7 @@ Widget flatButton({required String name, double? height, double? width}) {
           child: Icon(
             Icons.arrow_forward_ios,
             color: Colors.white,
-            size: 14.sp,
+            size:  kIsWeb ? 14 :14.sp,
           ),
         ),
       ],
