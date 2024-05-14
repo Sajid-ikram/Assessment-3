@@ -1,9 +1,11 @@
 import 'package:assessment_3/View/Auth/signin.dart';
 import 'package:assessment_3/View/home/home.dart';
+import 'package:assessment_3/provider/profile_provider.dart';
 import 'package:assessment_3/view_web/layouts/screen_divider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'Utils/custom_loading.dart';
 import 'View/Auth/verification.dart';
 
@@ -20,7 +22,7 @@ class _MiddleOfHomeAndSignInState extends State<MiddleOfHomeAndSignIn> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    Provider.of<ProfileProvider>(context, listen: false).getUserInfo();
   }
 
   @override

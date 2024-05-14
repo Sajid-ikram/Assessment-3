@@ -7,6 +7,7 @@ import '../../Provider/auth_provider.dart';
 import '../../Utils/app_colors.dart';
 import '../../View/home/home.dart';
 import '../../view/Auth/widgets/custom_button.dart';
+import '../../view/flight/flight.dart';
 
 Widget screenSelector(int flx, BuildContext context) {
   var pro = Provider.of<DrawerProvider>(context, listen: false);
@@ -26,11 +27,11 @@ Widget screenSelector(int flx, BuildContext context) {
           switch (provider.screenName) {
             case "Dashboard":
               {
-                return _buildContainer(provider.screenName);
+                return  _buildContainer(provider.screenName);
               }
             case "Flights":
               {
-                return Home();
+                return const Flight();
               }
             case "Tickets":
               {

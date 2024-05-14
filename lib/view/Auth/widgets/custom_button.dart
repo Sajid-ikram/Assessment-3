@@ -3,11 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 
-Widget customButton(String text) {
+Widget customButton(String text, { double? isAddPage}) {
   return Container(
     margin: EdgeInsets.only(right: 2.w),
     height: kIsWeb ? 50 : 50.sp,
-    width: double.infinity,
+    width: isAddPage ?? double.infinity,
     decoration: BoxDecoration(
       color: secondaryColor,
       borderRadius: BorderRadius.circular(10),

@@ -42,19 +42,28 @@ class _SideMenuState extends State<SideMenu> {
                   .changeScreen(menuItems[index]);
             },
             child: Container(
-              margin: EdgeInsets.symmetric(vertical: 20),
+              margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Provider.of<DrawerProvider>(context, listen: true)
+                            .screenName !=
+                        menuItems[index]
+                    ? Colors.transparent
+                    : Colors.grey.withOpacity(0.2),
+              ),
               child: Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 40,
                   ),
                   menuIcons[index],
-                  SizedBox(
+                  const SizedBox(
                     width: 30,
                   ),
                   Text(
                     menuItems[index],
-                    style: TextStyle(color: secondaryColor),
+                    style: const TextStyle(color: secondaryColor),
                   ),
                 ],
               ),
