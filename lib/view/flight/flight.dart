@@ -1,5 +1,6 @@
 
 import 'package:assessment_3/Utils/app_colors.dart';
+import 'package:assessment_3/provider/drawerProvider.dart';
 import 'package:assessment_3/view/flight/widgets/single_flight.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class _FlightState extends State<Flight> {
   bool isLoading = false;
   bool hasMore = true;
   List<FlightModel> listOfFlight = [];
-  bool isAddScreen = true;
+
 
   @override
   void initState() {
@@ -45,7 +46,15 @@ class _FlightState extends State<Flight> {
     });
   }
 
-  getData(bool refresh) async {
+  getData(bool refresh, {bool setToDef= false}) async {
+    if(setToDef){
+      setState(() {
+        isLoading = false;
+        hasMore = true;
+        listOfFlight.clear();
+      });
+
+    }
     if (refresh) {
       hasMore = true;
       listOfFlight.clear();
@@ -70,15 +79,14 @@ class _FlightState extends State<Flight> {
   @override
   Widget build(BuildContext context) {
     var pro = Provider.of<ProfileProvider>(context, listen: false);
-    return isAddScreen? AddFlight() : Scaffold(
+    var pro2 = Provider.of<DrawerProvider>(context);
+    return pro2.isAddScreen ? AddFlight(reloadPage: getData,) : Scaffold(
 
       floatingActionButton: pro.role == "admin"
           ? FloatingActionButton(
               backgroundColor: primaryColor,
               onPressed: () {
-                setState(() {
-                  isAddScreen = true;
-                });
+                pro2.changeFlightScreen(true);
               },
               child: const Icon(Icons.add, color: Colors.white,),
             )

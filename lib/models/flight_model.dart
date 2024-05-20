@@ -34,6 +34,12 @@ class FlightModel {
     final Map<String, dynamic> data = Map<String, dynamic>();
 
     data['flightNumber'] = flightNumber; // Added for serialization
+    data['start'] = start;
+    data['destination'] = destination;
+    data['departureTime'] = departureTime;
+    data['arrivalTime'] = arrivalTime;
+    data['travelDuration'] = travelDuration;
+
 
 
     return data;

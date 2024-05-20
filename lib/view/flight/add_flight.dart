@@ -9,11 +9,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../Utils/custom_loading.dart';
 import '../../models/flight_model.dart';
+import '../../provider/drawerProvider.dart';
 import '../../provider/profile_provider.dart';
 import '../../repository/flight_repo.dart';
 import '../Auth/widgets/custom_button.dart';
 import '../auth/widgets/snackBar.dart';
 import 'package:http/http.dart' as http;
+import 'package:date_time_picker/date_time_picker.dart';
 
 class AddFlight extends StatefulWidget {
   AddFlight({Key? key, this.flight, this.reloadPage}) : super(key: key);
@@ -54,6 +56,25 @@ class _AddFlightState extends State<AddFlight> {
   }
 
   validate() async {
+    print("departureTime: ${departureTimeController.text},");
+    print("departureTime: ${arrivalTimeController.text},");
+
+    if (flightNumberController.text.isEmpty ||
+        startController.text.isEmpty ||
+        destinationController.text.isEmpty ||
+        departureTimeController.text.isEmpty ||
+        arrivalTimeController.text.isEmpty ||
+        travelDurationController.text.isEmpty) {
+      snackBar(context, "All fields are required");
+      return;
+    }
+
+    if (DateTime.parse(departureTimeController.text)
+        .isAfter(DateTime.parse(arrivalTimeController.text))) {
+      snackBar(context, "Arrival time must be after departure time");
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       buildLoadingIndicator(context);
       try {
@@ -64,9 +85,9 @@ class _AddFlightState extends State<AddFlight> {
             "flightNumber": flightNumberController.text,
             "start": startController.text,
             "destination": destinationController.text,
+            "travelDuration": travelDurationController.text,
             "departureTime": departureTimeController.text,
             "arrivalTime": arrivalTimeController.text,
-            "travelDuration": travelDurationController.text,
           });
         } else {
           /*response = await FlightRepo().updateFlight(
@@ -79,13 +100,16 @@ class _AddFlightState extends State<AddFlight> {
           }*/
         }
 
-        Navigator.of(context).pop();
-        Navigator.of(context).pop();
+        Provider.of<DrawerProvider>(context, listen: false).changeFlightScreen(false);
+        widget.reloadPage!(true,setToDef : true);
+        Navigator.of(context, rootNavigator: true).pop();
+
 
         if (!response) {
           snackBar(context,
               "Fail to ${widget.flight == null ? "add" : "update"} flight");
         }
+        print("response: $response");
       } catch (e) {
         Navigator.of(context, rootNavigator: true).pop();
         snackBar(context, "Some error occur");
@@ -108,11 +132,11 @@ class _AddFlightState extends State<AddFlight> {
               children: [
                 InkWell(
                     onTap: () {
-                      Navigator.of(context).pop();
+                      Provider.of<DrawerProvider>(context, listen: false).changeFlightScreen(false);
                     },
                     child: Icon(
                       Icons.close,
-                      size: kIsWeb ? 30 : 30.sp,
+                      size: kIsWeb ? 30 : 25.sp,
                     )),
                 GestureDetector(
                   onTap: () {
@@ -120,7 +144,7 @@ class _AddFlightState extends State<AddFlight> {
                   },
                   child: customButton(
                       widget.flight == null ? "Create" : "Update",
-                      isAddPage: 130),
+                      isAddPage: kIsWeb ? 130 : 80.sp,),
                 ),
               ],
             ),
@@ -128,7 +152,7 @@ class _AddFlightState extends State<AddFlight> {
           SizedBox(height: 20.h),
           Text("Flight Details",
               style: GoogleFonts.inter(
-                  fontSize: kIsWeb ? 30 : 30.sp,
+                  fontSize: kIsWeb ? 30 : 20.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.black)),
           SizedBox(
@@ -140,31 +164,44 @@ class _AddFlightState extends State<AddFlight> {
                   buildTextField(flightNumberController, "Flight Number"),
                   buildTextField(startController, "Start"),
                   buildTextField(destinationController, "Destination"),
-                  GestureDetector(
-                    onTap: (){
-                      showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2025),
-
-                      ).then((value) {
-                        if(value != null){
-                          departureTimeController.text = value.toString();
-                        }
-                      });
-                    },
-                    child: buildTextField(
-                        departureTimeController, "Departure Time and Date",enabled: false),
-                  ),
-                  buildTextField(
-                      arrivalTimeController, "Arrival Time and Date"),
                   buildTextField(travelDurationController, "Travel Duration"),
+                  buildDateTimePicker(
+                      departureTimeController,kIsWeb ? "Departure Time and Date:" : "Departure:"),
+                  buildDateTimePicker(
+                      arrivalTimeController, kIsWeb ? "Arrival Time and Date:      " : "Arrival:")
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Padding buildDateTimePicker(TextEditingController controller, String text) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(32, 30, 32, 0),
+      child: DateTimePicker(
+        type: DateTimePickerType.dateTimeSeparate,
+        dateMask: 'd MMM, yyyy',
+        initialValue: DateTime.now().toString(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2100),
+        icon: Text(text,
+            style: GoogleFonts.inter(
+                color: Colors.grey, fontSize: kIsWeb ? 17 : 12.sp)),
+        dateLabelText: 'Date',
+        timeLabelText: "Hour",
+        style: TextStyle(color: Colors.black, fontSize: kIsWeb ? 17 : 12.sp),
+        onChanged: (val) {
+          controller.text = val ?? "";
+        },
+        validator: (val) {
+          print(val);
+          controller.text = val!;
+          print("arrivalTimeController.text: ${controller.text}");
+          return null;
+        },
       ),
     );
   }

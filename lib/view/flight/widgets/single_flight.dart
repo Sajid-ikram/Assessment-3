@@ -46,7 +46,7 @@ class SingleFlight extends StatelessWidget {
                 Text(
                   "Flight Number: ${flight.flightNumber}",
                   style: TextStyle(
-                    fontSize: kIsWeb ? 16 : 16.sp,
+                    fontSize: kIsWeb ? 16 : 12.sp,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -102,14 +102,14 @@ class SingleFlight extends StatelessWidget {
                             Text(
                               flight.start ?? "",
                               style: TextStyle(
-                                fontSize: kIsWeb ? 16 : 16.sp,
+                                fontSize: kIsWeb ? 16 : 12.sp,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
                               convertDateTimeToString(flight.departureTime ?? ""),
                               style: TextStyle(
-                                fontSize: kIsWeb ? 14 : 14.sp,
+                                fontSize: kIsWeb ? 14 : 8.sp,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -121,7 +121,7 @@ class SingleFlight extends StatelessWidget {
                             Text(
                               flight.travelDuration ?? "",
                               style: TextStyle(
-                                fontSize: kIsWeb ? 14 : 14.sp,
+                                fontSize: kIsWeb ? 14 : 10.sp,
                                 color: Colors.grey,
                               ),
                             ),
@@ -129,11 +129,11 @@ class SingleFlight extends StatelessWidget {
                               children: [
                                 Icon(
                                   FontAwesomeIcons.plane,
-                                  size: kIsWeb ? 18 : 16.sp,
+                                  size: kIsWeb ? 18 : 12.sp,
                                   color: Colors.grey,
                                 ),
                                 Text(
-                                  "---------------------------------------------",
+                                  kIsWeb ? "---------------------------------------------" : "--------",
                                   style: TextStyle(
                                     fontSize: kIsWeb ? 14 : 14.sp,
                                     color: Colors.grey,
@@ -141,7 +141,7 @@ class SingleFlight extends StatelessWidget {
                                 ),
                                 Icon(
                                   FontAwesomeIcons.circle,
-                                  size: kIsWeb ? 14 : 14.sp,
+                                  size: kIsWeb ? 14 : 10.sp,
                                   color: Colors.grey,
                                 ),
                               ],
@@ -154,14 +154,14 @@ class SingleFlight extends StatelessWidget {
                             Text(
                               flight.destination ?? "",
                               style: TextStyle(
-                                fontSize: kIsWeb ? 16 : 16.sp,
+                                fontSize: kIsWeb ? 16 : 12.sp,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
                                 convertDateTimeToString(flight.arrivalTime ?? ""),
                               style: TextStyle(
-                                fontSize: kIsWeb ? 14 : 14.sp,
+                                fontSize: kIsWeb ? 14 : 8.sp,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -185,6 +185,7 @@ class SingleFlight extends StatelessWidget {
 String convertDateTimeToString(String inputString, {String outputFormat = 'yyyy-MM-dd HH:mm'}) {
 
   try {
+
     DateTime datetimeObj = DateTime.parse(inputString);
     return DateFormat(outputFormat).format(datetimeObj);
   } catch (ValueError) {

@@ -21,6 +21,7 @@ class FlightRepo {
     int retry = 0;
     FlightModel flightModel = FlightModel.fromJson(flightData);
 
+
     bool response = false;
 
     while (retry++ < 2) {
