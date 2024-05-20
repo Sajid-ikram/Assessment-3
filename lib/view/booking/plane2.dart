@@ -1,6 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import '../../provider/booking_provider.dart';
+import '../Auth/widgets/custom_button.dart';
 
 class Plane2 extends StatefulWidget {
   @override
@@ -23,16 +28,53 @@ class _Plane2State extends State<Plane2> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
-    print(seatStatus);
     return Scaffold(
-
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView(
             children: [
+              SizedBox(height: 20.h),
+              Align(
+                alignment: Alignment.center,
+                child: Text("Select Your Seats",
+                    style: GoogleFonts.inter(
+                        fontSize: kIsWeb ? 25 : 20.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black)),
+              ),
+              SizedBox(height: 20.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                        onTap: () {
+                          Provider.of<BookingProvider>(context, listen: false)
+                              .changeScreenNumber(2);
+                        },
+                        child: Icon(
+                          Icons.arrow_back_ios,
+                          size: kIsWeb ? 30 : 25.sp,
+                        )),
+                    GestureDetector(
+                      onTap: () {
+                        Provider.of<BookingProvider>(context, listen: false)
+                            .changeScreenNumber(4);
+                      },
+                      child: customButton(
+                        "Next",
+                        isAddPage: kIsWeb ? 130 : 80.sp,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 40.h),
               buildExit(),
               for (int row = 0; row < rows1; row++)
                 Row(
@@ -73,9 +115,9 @@ class _Plane2State extends State<Plane2> {
               SizedBox(height: 20.h),
               for (int row = 9; row < rows2; row++)
                 Column(
-
                   children: [
-                    if(row == 15 || row == 14)   buildExit(text: "Emergency Exit", padding: 10, width: 90),
+                    if (row == 15 || row == 14)
+                      buildExit(text: "Emergency Exit", padding: 10, width: 90),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -168,14 +210,14 @@ class _Plane2State extends State<Plane2> {
   }
 
   Padding buildExit({String? text, double padding = 20, double? width}) {
-    return  Padding(
-      padding:  EdgeInsets.symmetric(vertical: padding),
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: padding),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.arrow_back_ios),
           Text(text ?? "Exit"),
-           SizedBox(width: width??  200),
+          SizedBox(width: width ?? 200),
           Text(text ?? "Exit"),
           const Icon(Icons.arrow_forward_ios),
         ],

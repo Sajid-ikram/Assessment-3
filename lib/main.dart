@@ -1,3 +1,4 @@
+import 'package:assessment_3/provider/booking_provider.dart';
 import 'package:assessment_3/provider/drawerProvider.dart';
 import 'package:assessment_3/provider/profile_provider.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => Authentication()),
         ChangeNotifierProvider(create: (_) => DrawerProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(create: (_) => BookingProvider()),
 
       ],
       child: ScreenUtilInit(

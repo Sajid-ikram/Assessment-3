@@ -12,7 +12,7 @@ class DrawerProvider extends ChangeNotifier{
 
   }
 
-  String screenName = "Flights" ;
+  String screenName = "Booking" ;
 
   void changeScreen(String name){
     screenName = name;

@@ -7,6 +7,9 @@ import '../../Provider/auth_provider.dart';
 import '../../Utils/app_colors.dart';
 import '../../View/home/home.dart';
 import '../../view/Auth/widgets/custom_button.dart';
+import '../../view/booking/booking_landing_page.dart';
+import '../../view/booking/booking_stage/init_page.dart';
+import '../../view/booking/booking_stage/number_of_passenger1.dart';
 import '../../view/booking/plane1.dart';
 import '../../view/booking/plane2.dart';
 import '../../view/flight/flight.dart';
@@ -37,7 +40,7 @@ Widget screenSelector(int flx, BuildContext context) {
               }
             case "Booking":
               {
-                return _buildContainer(provider.screenName);
+                return InitPage();
               }
             case "Customers":
               {
