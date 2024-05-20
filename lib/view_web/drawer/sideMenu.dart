@@ -16,7 +16,7 @@ class _SideMenuState extends State<SideMenu> {
   List<String> menuItems = [
     "Dashboard",
     "Flights",
-    "Tickets",
+    "Booking",
     "Customers",
     "Statistics",
     "Logout"

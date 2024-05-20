@@ -164,7 +164,7 @@ class _AddFlightState extends State<AddFlight> {
                   buildTextField(flightNumberController, "Flight Number"),
                   buildTextField(startController, "Start"),
                   buildTextField(destinationController, "Destination"),
-                  buildTextField(travelDurationController, "Travel Duration"),
+                  buildTextField(travelDurationController, "Plane Number"),
                   buildDateTimePicker(
                       departureTimeController,kIsWeb ? "Departure Time and Date:" : "Departure:"),
                   buildDateTimePicker(

@@ -7,6 +7,8 @@ import '../../Provider/auth_provider.dart';
 import '../../Utils/app_colors.dart';
 import '../../View/home/home.dart';
 import '../../view/Auth/widgets/custom_button.dart';
+import '../../view/booking/plane1.dart';
+import '../../view/booking/plane2.dart';
 import '../../view/flight/flight.dart';
 
 Widget screenSelector(int flx, BuildContext context) {
@@ -27,13 +29,13 @@ Widget screenSelector(int flx, BuildContext context) {
           switch (provider.screenName) {
             case "Dashboard":
               {
-                return  _buildContainer(provider.screenName);
+                return  Plane1();
               }
             case "Flights":
               {
                 return const Flight();
               }
-            case "Tickets":
+            case "Booking":
               {
                 return _buildContainer(provider.screenName);
               }

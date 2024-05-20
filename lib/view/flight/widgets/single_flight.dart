@@ -55,12 +55,7 @@ class SingleFlight extends StatelessWidget {
                   PopupMenuButton<SampleItem>(
                     onSelected: (SampleItem item) async {
                       if (item == SampleItem.update) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddFlight(
-                                  flight: flight, reloadPage: reloadPage)),
-                        );
+                        snackBar(context, "Not Implemented Yet");
                       } else {
                         bool response =
                             await FlightRepo().deleteFlight(flight.id ?? "");
@@ -119,7 +114,7 @@ class SingleFlight extends StatelessWidget {
                         Column(
                           children: [
                             Text(
-                              flight.travelDuration ?? "",
+                              DateTime.parse(flight.arrivalTime!).difference(DateTime.parse(flight.departureTime!)).inHours.toString() + "h " + DateTime.parse(flight.arrivalTime!).difference(DateTime.parse(flight.departureTime!)).inMinutes.toString() + "m",
                               style: TextStyle(
                                 fontSize: kIsWeb ? 14 : 10.sp,
                                 color: Colors.grey,
