@@ -45,6 +45,7 @@ dependencies:
   font_awesome_flutter: ^10.7.0
   intl:
   date_time_picker:
+  checkout_screen_ui: ^1.0.1
 
 dev_dependencies:
   flutter_test:

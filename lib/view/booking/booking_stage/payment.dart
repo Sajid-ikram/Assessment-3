@@ -1,3 +1,4 @@
+/*
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -134,4 +135,215 @@ Padding buildTextField(TextEditingController controller, String text,
       ),
     ),
   );
+}
+*/
+
+// ignore_for_file: avoid_print
+
+import 'dart:io';
+import 'package:checkout_screen_ui/checkout_ui.dart';
+import 'package:checkout_screen_ui/models/checkout_result.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import '../../../Utils/custom_loading.dart';
+import '../../../provider/booking_provider.dart';
+import '../../Auth/widgets/custom_button.dart';
+import '../../Auth/widgets/snackBar.dart';
+
+class PaymentPage extends StatefulWidget {
+  const PaymentPage({Key? key}) : super(key: key);
+
+  @override
+  State<PaymentPage> createState() => _PaymentPageState();
+}
+
+class _PaymentPageState extends State<PaymentPage> {
+  Future<void> _nativePayClicked(BuildContext context) async {
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Native Pay requires setup')));
+  }
+
+  Future<void> _cashPayClicked(BuildContext context) async {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Cash Pay requires setup')));
+  }
+
+  final List<PriceItem> _priceItems = [
+    PriceItem(name: 'Ticket A', quantity: 1, itemCostCents: 5200),
+    PriceItem(name: 'Ticket B', quantity: 2, itemCostCents: 8599),
+    PriceItem(name: 'Ticket C', quantity: 1, itemCostCents: 2499),
+  ];
+
+  bookTicket() {
+    buildLoadingIndicator(context);
+    var pro = Provider.of<BookingProvider>(context, listen: false);
+    pro.bookFlight().then(
+      (value) {
+        Navigator.of(context, rootNavigator: true).pop();
+        if (value != "Success") {
+          snackBar(context, value);
+        } else {
+          snackBar(context, "Tickets booked successfully!");
+          Provider.of<BookingProvider>(context, listen: false)
+              .changeScreenNumber(0);
+          Provider.of<BookingProvider>(context, listen: false)
+              .changePassengers(0, 0, 0);
+        }
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final demoOnlyStuff = DemoOnlyStuff();
+
+    final GlobalKey<CardPayButtonState> _payBtnKey =
+        GlobalKey<CardPayButtonState>();
+
+    Future<void> _creditPayClicked(
+        CardFormResults results, CheckOutResult checkOutResult) async {
+      _payBtnKey.currentState?.updateStatus(CardPayButtonStatus.processing);
+
+      demoOnlyStuff.callTransactionApi(_payBtnKey);
+
+      print(results);
+
+      for (PriceItem item in checkOutResult.priceItems) {
+        print('Item: ${item.name} - Quantity: ${item.quantity}');
+      }
+
+      final String subtotal =
+          (checkOutResult.subtotalCents / 100).toStringAsFixed(2);
+      print('Subtotal: \$$subtotal');
+
+      final String tax = (checkOutResult.taxCents / 100).toStringAsFixed(2);
+      print('Tax: \$$tax');
+
+      final String total =
+          (checkOutResult.totalCostCents / 100).toStringAsFixed(2);
+      print('Total: \$$total');
+    }
+
+    const String _payToName = 'Ealing Airline';
+
+    final _isApple = kIsWeb ? false : Platform.isIOS;
+
+    const _footer = CheckoutPageFooter(
+      // These are example url links only. Use your own links in live code
+      privacyLink: 'https://[Credit Processor].com/privacy',
+      termsLink: 'https://[Credit Processor].com/payment-terms/legal',
+      note: 'Powered By Ealing Airline',
+      noteLink: 'https://[Credit Processor].com/',
+    );
+
+    Function? _onBack = Navigator.of(context).canPop()
+        ? () => Navigator.of(context).pop()
+        : null;
+
+    return Scaffold(
+      appBar: null,
+      body: Align(
+        alignment: Alignment.center,
+        child: SizedBox(
+          width: kIsWeb ? 600 : 360.w,
+          child: Column(
+            children: [
+              SizedBox(height: 20.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                        onTap: () {
+                          Provider.of<BookingProvider>(context, listen: false)
+                              .changeScreenNumber(3);
+                        },
+                        child: Icon(
+                          Icons.arrow_back_ios,
+                          size: kIsWeb ? 30 : 25.sp,
+                        )),
+                    GestureDetector(
+                      onTap: () {
+                        bookTicket();
+                      },
+                      child: customButton(
+                        "Book",
+                        isAddPage: kIsWeb ? 130 : 80.sp,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 40.h),
+              Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 32.0),
+                  child: Text(
+                      "This is a demo payment page. No real transactions will be made. Press 'Book' to confirm the booking.",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                          fontSize: kIsWeb ? 14 : 10.sp, color: Colors.grey)),
+                ),
+              ),
+              SizedBox(height: 40.h),
+              Expanded(
+                child: CheckoutPage(
+                  data: CheckoutData(
+                    priceItems: _priceItems,
+                    payToName: _payToName,
+                    displayNativePay: !kIsWeb,
+                    onNativePay: (checkoutResults) =>
+                        _nativePayClicked(context),
+                    //onCashPay: (checkoutResults) => _cashPayClicked(context),
+                    isApple: _isApple,
+                    onCardPay: (paymentInfo, checkoutResults) =>
+                        _creditPayClicked(paymentInfo, checkoutResults),
+                    onBack: _onBack,
+                    payBtnKey: _payBtnKey,
+                    displayTestData: true,
+                    taxRate: 0.07,
+                  ),
+                  footer: _footer,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DemoOnlyStuff {
+  bool shouldSucceed = true;
+
+  Future<void> provideSomeTimeBeforeReset(
+      GlobalKey<CardPayButtonState> _payBtnKey) async {
+    await Future.delayed(const Duration(seconds: 2), () {
+      _payBtnKey.currentState?.updateStatus(CardPayButtonStatus.ready);
+      return;
+    });
+  }
+
+  Future<void> callTransactionApi(
+      GlobalKey<CardPayButtonState> _payBtnKey) async {
+    await Future.delayed(const Duration(seconds: 2), () {
+      if (shouldSucceed) {
+        _payBtnKey.currentState?.updateStatus(CardPayButtonStatus.success);
+        shouldSucceed = false;
+      } else {
+        _payBtnKey.currentState?.updateStatus(CardPayButtonStatus.fail);
+        shouldSucceed = true;
+      }
+      provideSomeTimeBeforeReset(_payBtnKey);
+      return;
+    });
+  }
 }

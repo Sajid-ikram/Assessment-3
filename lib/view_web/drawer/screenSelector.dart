@@ -32,7 +32,7 @@ Widget screenSelector(int flx, BuildContext context) {
           switch (provider.screenName) {
             case "Dashboard":
               {
-                return  Plane1();
+                return _buildContainer(provider.screenName);
               }
             case "Flights":
               {

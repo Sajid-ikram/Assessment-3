@@ -159,6 +159,7 @@ class _Plane1State extends State<Plane1> {
       pro.changeScreenNumber(4);
     } else {
       snackBar(context, 'Please select all the seats you need');
+      snackBar(context, 'Please select all the seats you need');
     }
   }
 
