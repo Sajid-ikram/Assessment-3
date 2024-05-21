@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../Utils/custom_loading.dart';
 import '../../provider/booking_provider.dart';
 import '../Auth/widgets/custom_button.dart';
 import '../Auth/widgets/snackBar.dart';
@@ -25,6 +26,8 @@ class _Plane1State extends State<Plane1> {
   final List<List<bool>> seatStatus =
       List.generate(20, (index) => List.filled(6, false));
 
+  List<String> bookedSeats = [];
+
   /*void toggleSeat(int row, int column) {
     setState(() {
       seatStatus[row][column] = !seatStatus[row][column];
@@ -37,7 +40,7 @@ class _Plane1State extends State<Plane1> {
     // Check if the selected seat is already booked
 
     // Check if booking this seat would leave a single empty seat between two booked seats
-    if (row > 2 && row < 20) {
+    if (row > 2 && row < 19) {
       if (column == 1 || column == 4) {
         if (seatStatus[row][column - 1] || seatStatus[row][column + 1]) {
           setState(() {
@@ -120,176 +123,277 @@ class _Plane1State extends State<Plane1> {
           });
         }
       }
+    } else {
+      setState(() {
+        if (!seatStatus[row][column]) {
+          if (pro.totalSeatSelected ==
+              (pro.adults + pro.teenagers + pro.babies)) {
+            snackBar(context, 'You have selected all the seats you need.');
+            return;
+          }
+          pro.totalSeatSelected++;
+        } else {
+          pro.totalSeatSelected--;
+        }
+        seatStatus[row][column] = !seatStatus[row][column];
+      });
+    }
+  }
+
+  makePayment() {
+    var pro = Provider.of<BookingProvider>(context, listen: false);
+    if (pro.totalSeatSelected == (pro.adults + pro.teenagers + pro.babies)) {
+      List<Map<String, String>> selectedSeats = [];
+      for (int i = 0; i < 20; i++) {
+        for (int j = 0; j < 6; j++) {
+          if (seatStatus[i][j]) {
+            selectedSeats.add({
+              "row": "$i",
+              "column": "$j",
+              "seatNumber": "${i + 1}${String.fromCharCode(65 + j)}"
+            });
+          }
+        }
+      }
+      pro.selectedSeats = selectedSeats;
+      pro.changeScreenNumber(4);
+    } else {
+      snackBar(context, 'Please select all the seats you need');
+    }
+  }
+
+  bool isLoading = true;
+
+  getExistingSeats() {
+    try {
+      var pro = Provider.of<BookingProvider>(context, listen: false);
+      pro.getBookedSeats().then((value) {
+        if (value == null) {
+          setState(() {
+            isLoading = false;
+          });
+          return;
+        }
+        value["bookedSeats"].forEach((element) {
+          bookedSeats.add(element);
+        });
+
+        for (int i = 0; i < 20; i++) {
+          for (int j = 0; j < 6; j++) {
+            if (bookedSeats
+                .contains("${i + 1}${String.fromCharCode(65 + j)}")) {
+              seatStatus[i][j] = true;
+            }
+          }
+        }
+
+        setState(() {
+          isLoading = false;
+        });
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print(e);
     }
   }
 
   @override
+  void initState() {
+    getExistingSeats();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print(isLoading);
+    print("***************************************");
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView(
-            children: [
-              SizedBox(height: 20.h),
-              Align(
-                alignment: Alignment.center,
-                child: Text("Select Your Seats",
-                    style: GoogleFonts.inter(
-                        fontSize: kIsWeb ? 25 : 20.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black)),
-              ),
-              SizedBox(height: 20.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30.w),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: isLoading
+          ? buildLoadingWidget()
+          : Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView(
                   children: [
-                    InkWell(
-                        onTap: () {
-                          Provider.of<BookingProvider>(context, listen: false)
-                              .changeScreenNumber(2);
-                        },
-                        child: Icon(
-                          Icons.arrow_back_ios,
-                          size: kIsWeb ? 30 : 25.sp,
-                        )),
-                    GestureDetector(
-                      onTap: () {
-                        Provider.of<BookingProvider>(context, listen: false)
-                            .changeScreenNumber(4);
-                      },
-                      child: customButton(
-                        "Next",
-                        isAddPage: kIsWeb ? 130 : 80.sp,
-                      ),
+                    SizedBox(height: 20.h),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Text("Select Your Seats",
+                          style: GoogleFonts.inter(
+                              fontSize: kIsWeb ? 25 : 20.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black)),
                     ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 40.h),
-              SizedBox(height: 20.h),
-              for (int row = 0; row < rows1; row++)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    for (int col = 0; col < columns1; col++)
-                      GestureDetector(
-                        onTap: () => toggleSeat(row, col),
-                        child: Container(
-                          margin: EdgeInsets.fromLTRB(
-                              4,
-                              4,
-                              col == 1
-                                  ? kIsWeb
-                                      ? 50
-                                      : 30.sp
-                                  : 4,
-                              4),
-                          width: 40,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: seatStatus[row][col]
-                                ? Colors.green
-                                : Color(0xff3278CA),
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${row + 1}${String.fromCharCode(65 + col)}',
-                              style: TextStyle(color: Colors.white),
+                    SizedBox(height: 20.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                              onTap: () {
+                                Provider.of<BookingProvider>(context,
+                                        listen: false)
+                                    .changeScreenNumber(2);
+                              },
+                              child: Icon(
+                                Icons.arrow_back_ios,
+                                size: kIsWeb ? 30 : 25.sp,
+                              )),
+                          GestureDetector(
+                            onTap: () {
+                              makePayment();
+                            },
+                            child: customButton(
+                              "Next",
+                              isAddPage: kIsWeb ? 130 : 80.sp,
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                  ],
-                ),
-              buildExit(text: "Restroom", padding: 20, width: 170),
-              for (int row = 3; row < rows2; row++)
-                Column(
-                  children: [
-                    if (row == 9) buildExit(padding: 10, text: "Exit"),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (int col = 0; col < columns2; col++)
-                          GestureDetector(
-                            onTap: () => toggleSeat(row, col),
-                            child: Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  4,
-                                  4,
-                                  col == 2
-                                      ? kIsWeb
-                                          ? 50
-                                          : 30.sp
-                                      : 4,
-                                  4),
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: seatStatus[row][col]
-                                    ? Colors.green
-                                    : row < 8
-                                        ? Color(0xffFF8839)
-                                        : Color(0xff3FB8B9),
-                                border: Border.all(color: Colors.black),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '${row + 1}${String.fromCharCode(65 + col)}',
-                                  style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(height: 40.h),
+                    SizedBox(height: 20.h),
+                    for (int row = 0; row < rows1; row++)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          for (int col = 0; col < columns1; col++)
+                            GestureDetector(
+                              onTap: () => bookedSeats.contains(
+                                      "${row + 1}${String.fromCharCode(65 + col)}")
+                                  ? snackBar(context, 'Seat already booked')
+                                  : toggleSeat(row, col),
+                              child: Container(
+                                margin: EdgeInsets.fromLTRB(
+                                    4,
+                                    4,
+                                    col == 1
+                                        ? kIsWeb
+                                            ? 50
+                                            : 30.sp
+                                        : 4,
+                                    4),
+                                width: 40,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: bookedSeats.contains(
+                                          "${row + 1}${String.fromCharCode(65 + col)}")
+                                      ? Colors.grey
+                                      : seatStatus[row][col]
+                                          ? Colors.green
+                                          : Color(0xff3278CA),
+                                  border: Border.all(color: Colors.black),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '${row + 1}${String.fromCharCode(65 + col)}',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                 ),
                               ),
                             ),
+                        ],
+                      ),
+                    buildExit(text: "Restroom", padding: 20, width: 170),
+                    for (int row = 3; row < rows2; row++)
+                      Column(
+                        children: [
+                          if (row == 9) buildExit(padding: 10, text: "Exit"),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              for (int col = 0; col < columns2; col++)
+                                GestureDetector(
+                                  onTap: () => bookedSeats.contains(
+                                          "${row + 1}${String.fromCharCode(65 + col)}")
+                                      ? snackBar(context, 'Seat already booked')
+                                      : toggleSeat(row, col),
+                                  child: Container(
+                                    margin: EdgeInsets.fromLTRB(
+                                        4,
+                                        4,
+                                        col == 2
+                                            ? kIsWeb
+                                                ? 50
+                                                : 30.sp
+                                            : 4,
+                                        4),
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: bookedSeats.contains(
+                                              "${row + 1}${String.fromCharCode(65 + col)}")
+                                          ? Colors.grey
+                                          : seatStatus[row][col]
+                                              ? Colors.green
+                                              : row < 8
+                                                  ? Color(0xffFF8839)
+                                                  : Color(0xff3FB8B9),
+                                      border: Border.all(color: Colors.black),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        '${row + 1}${String.fromCharCode(65 + col)}',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
-                      ],
-                    ),
-                  ],
-                ),
-              for (int row = 19; row < rows3; row++)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    for (int col = 0; col < columns3; col++)
-                      GestureDetector(
-                        onTap: () => toggleSeat(row, col),
-                        child: Container(
-                          margin: EdgeInsets.fromLTRB(
-                              4,
-                              4,
-                              col == 1
-                                  ? kIsWeb
-                                      ? 50
-                                      : 30.sp
-                                  : 4,
-                              4),
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: seatStatus[row][col]
-                                ? Colors.green
-                                : Color(0xff3FB8B9),
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${row + 1}${String.fromCharCode(65 + col)}',
-                              style: TextStyle(color: Colors.white),
+                        ],
+                      ),
+                    for (int row = 19; row < rows3; row++)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          for (int col = 0; col < columns3; col++)
+                            GestureDetector(
+                              onTap: () => bookedSeats.contains(
+                                      "${row + 1}${String.fromCharCode(65 + col)}")
+                                  ? snackBar(context, 'Seat already booked')
+                                  : toggleSeat(row, col),
+                              child: Container(
+                                margin: EdgeInsets.fromLTRB(
+                                    4,
+                                    4,
+                                    col == 1
+                                        ? kIsWeb
+                                            ? 50
+                                            : 30.sp
+                                        : 4,
+                                    4),
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: bookedSeats.contains(
+                                          "${row + 1}${String.fromCharCode(65 + col)}")
+                                      ? Colors.grey
+                                      : seatStatus[row][col]
+                                          ? Colors.green
+                                          : Color(0xff3FB8B9),
+                                  border: Border.all(color: Colors.black),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '${row + 1}${String.fromCharCode(65 + col)}',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                        ],
                       ),
                   ],
                 ),
-            ],
-          ),
-        ),
-      ),
+              ),
+            ),
     );
   }
 }

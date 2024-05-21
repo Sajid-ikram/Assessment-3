@@ -36,6 +36,8 @@ class SingleFlight extends StatelessWidget {
             .changeScreenNumber(1);
         Provider.of<BookingProvider>(context, listen: false).planeNumber =
             int.parse(flight.travelDuration ?? "1");
+        Provider.of<BookingProvider>(context, listen: false).flightNumber =
+            flight.flightNumber ?? "";
       },
       child: Container(
         width: 350.w,

@@ -1,6 +1,7 @@
 import 'package:assessment_3/view/booking/booking_landing_page.dart';
 import 'package:assessment_3/view/booking/booking_stage/number_of_passenger1.dart';
 import 'package:assessment_3/view/booking/booking_stage/passengers_details2.dart';
+import 'package:assessment_3/view/booking/booking_stage/payment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +30,10 @@ class InitPage extends StatelessWidget {
           case 3:
             {
               return provider.planeNumber == 2 ? Plane2() : Plane1();
+            }
+          case 4:
+            {
+              return PaymentPage();
             }
           default:
             {
