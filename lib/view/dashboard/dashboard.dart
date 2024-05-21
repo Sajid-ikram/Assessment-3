@@ -31,29 +31,36 @@ class _DashboardState extends State<Dashboard> {
           if (size.width >= 900)
             Image.asset("assets/home.jpg",
                 fit: BoxFit.cover, height: size.height, width: size.width),
+
+
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Spacer(
+              if(kIsWeb) Spacer(
                   flex: size.width >= 900 ? 5 : 1
               ),
               SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: SizedBox(
                   height: kIsWeb ? 800 : 790.h,
-                  width: kIsWeb ? 500 : 360.w,
+                  width: kIsWeb ? 500 : 320.w,
                   child: Padding(
                     padding: EdgeInsets.all(30.sp),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        if (!kIsWeb)
+                          Image.asset(
+                            "assets/dashboard2.jpg",
+                            fit: BoxFit.contain,
+                          ),
                         SizedBox(height: 45.h),
 
                         Text(
                           "Welcome to Ealing Airline",
                           style: TextStyle(
-                            fontSize: kIsWeb ? 30 : 14.sp,
+                            fontSize: kIsWeb ? 30 : 18.sp,
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).primaryColor,
                           ),

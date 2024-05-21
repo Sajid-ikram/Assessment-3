@@ -137,14 +137,14 @@ class Ticket extends StatelessWidget {
         children: [
           Container(
             color: Colors.grey.withOpacity(0.1),
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.only(left: 10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Flight Number: $flightNumber",
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold)),
+                    style:  TextStyle(
+                        fontSize: kIsWeb? 20 : 14.sp, fontWeight: FontWeight.bold)),
                 const Spacer(),
                 PopupMenuButton<WhyFarther>(
                   onSelected: (WhyFarther item) async {
