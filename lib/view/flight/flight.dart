@@ -2,6 +2,7 @@ import 'package:assessment_3/Utils/app_colors.dart';
 import 'package:assessment_3/provider/drawerProvider.dart';
 import 'package:assessment_3/view/flight/widgets/single_flight.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -99,7 +100,7 @@ class _FlightState extends State<Flight> {
               padding: const EdgeInsets.only(top: 20.0),
               child: Column(
                 children: [
-                  SizedBox(height: 150, child: FlightFilter()),
+                  kIsWeb ?  SizedBox(height: 150, child: FlightFilter()) : SizedBox(),
                   Expanded(
                     child: ListView.builder(
                       physics: const BouncingScrollPhysics(),

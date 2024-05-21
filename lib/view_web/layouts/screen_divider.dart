@@ -1,3 +1,4 @@
+import 'package:assessment_3/provider/profile_provider.dart';
 import 'package:assessment_3/view_web/layouts/topNavigationBar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -15,8 +16,20 @@ import '../screens/WebScreen.dart';
 const int lageScreenSize = 1366;
 const int mediumScreenSize = 768;
 
-class SiteLayout extends StatelessWidget {
+class SiteLayout extends StatefulWidget {
   SiteLayout({Key? key}) : super(key: key);
+
+  @override
+  State<SiteLayout> createState() => _SiteLayoutState();
+}
+
+class _SiteLayoutState extends State<SiteLayout> {
+
+  @override
+  void initState() {
+    Provider.of<ProfileProvider>(context, listen: false).getUserInfo();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

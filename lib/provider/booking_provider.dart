@@ -16,6 +16,7 @@ class BookingProvider extends ChangeNotifier {
   int totalSeatSelected = 0;
   String flightNumber = "";
   List<Map<String, String>> selectedSeats = [];
+  String departureDate = "";
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
@@ -42,6 +43,7 @@ class BookingProvider extends ChangeNotifier {
           "userId": _firebaseAuth.currentUser!.uid,
           "flightNumber": flightNumber,
           "selectedSeats": selectedSeats,
+          "departureDate": departureDate,
         },
       );
 
@@ -50,6 +52,39 @@ class BookingProvider extends ChangeNotifier {
         newSeats.add(element["seatNumber"]!);
       }
       updateBookedFlight(newSeats);
+
+      return "Success";
+    } catch (e) {
+      print("--------------------------+++++++++++++++++++++++1 11 1");
+      return "An Error occur";
+    }
+  }
+
+  Future<String> deleteBooking(String id,  List<Map<String, String>> seats, String flightNumber) async {
+    try {
+      // Retrieve the booking
+      DocumentSnapshot booking = await FirebaseFirestore.instance.collection("booking").doc(id).get();
+
+
+
+
+      // Delete the booking
+      await FirebaseFirestore.instance.collection("booking").doc(id).delete();
+
+      // Remove the seats from the flightBookedSeats collection
+      try {
+        final docRef = FirebaseFirestore.instance
+            .collection('flightBookedSeats')
+            .doc(flightNumber);
+
+        await docRef.update({
+          'bookedSeats': FieldValue.arrayRemove(seats.map((e) => e["seatNumber"]).toList()),
+        });
+        print("Seats removed from flightBookedSeats collection--------------------");
+      } catch (e) {
+        print(e);
+        print("Error removing seats from flightBookedSeats collection");
+      }
 
       return "Success";
     } catch (e) {

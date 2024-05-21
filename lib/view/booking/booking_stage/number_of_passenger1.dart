@@ -100,7 +100,7 @@ class _NumberOfPassengerState extends State<NumberOfPassenger> {
                               size: kIsWeb ? 30 : 25.sp,
                             )),
                         SizedBox(
-                          width: 350,
+                          width:  kIsWeb ? 350 : 120.w,
                         ),
                         GestureDetector(
                           onTap: () {
@@ -135,7 +135,7 @@ class _NumberOfPassengerState extends State<NumberOfPassenger> {
                           color: Colors.black)),
                   SizedBox(height: 30),
                   SizedBox(
-                    width: kIsWeb ? 500 : 340.w,
+                    width: kIsWeb ? 500 : 240.w,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

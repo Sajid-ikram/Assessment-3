@@ -146,7 +146,8 @@ class _Plane1State extends State<Plane1> {
       List<Map<String, String>> selectedSeats = [];
       for (int i = 0; i < 20; i++) {
         for (int j = 0; j < 6; j++) {
-          if (seatStatus[i][j]) {
+          if (seatStatus[i][j] &&
+              !bookedSeats.contains("${i + 1}${String.fromCharCode(65 + j)}")) {
             selectedSeats.add({
               "row": "$i",
               "column": "$j",
@@ -157,8 +158,8 @@ class _Plane1State extends State<Plane1> {
       }
       pro.selectedSeats = selectedSeats;
       pro.changeScreenNumber(4);
+      pro.totalSeatSelected = 0;
     } else {
-      snackBar(context, 'Please select all the seats you need');
       snackBar(context, 'Please select all the seats you need');
     }
   }
@@ -238,6 +239,13 @@ class _Plane1State extends State<Plane1> {
                                 Provider.of<BookingProvider>(context,
                                         listen: false)
                                     .changeScreenNumber(2);
+                                bookedSeats = [];
+                                for (var element in seatStatus) {
+                                  element.fillRange(0, element.length, false);
+                                }
+                                Provider.of<BookingProvider>(context,
+                                        listen: false)
+                                    .totalSeatSelected = 0;
                               },
                               child: Icon(
                                 Icons.arrow_back_ios,

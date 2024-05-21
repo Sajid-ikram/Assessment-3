@@ -140,12 +140,15 @@ Padding buildTextField(TextEditingController controller, String text,
 
 // ignore_for_file: avoid_print
 
+import 'dart:async';
 import 'dart:io';
+import 'package:assessment_3/provider/profile_provider.dart';
 import 'package:checkout_screen_ui/checkout_ui.dart';
 import 'package:checkout_screen_ui/models/checkout_result.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -173,18 +176,13 @@ class _PaymentPageState extends State<PaymentPage> {
         .showSnackBar(const SnackBar(content: Text('Cash Pay requires setup')));
   }
 
-  final List<PriceItem> _priceItems = [
-    PriceItem(name: 'Ticket A', quantity: 1, itemCostCents: 5200),
-    PriceItem(name: 'Ticket B', quantity: 2, itemCostCents: 8599),
-    PriceItem(name: 'Ticket C', quantity: 1, itemCostCents: 2499),
-  ];
+  final List<PriceItem> _priceItems = [];
 
   bookTicket() {
-    buildLoadingIndicator(context);
+
     var pro = Provider.of<BookingProvider>(context, listen: false);
     pro.bookFlight().then(
       (value) {
-        Navigator.of(context, rootNavigator: true).pop();
         if (value != "Success") {
           snackBar(context, value);
         } else {
@@ -196,6 +194,18 @@ class _PaymentPageState extends State<PaymentPage> {
         }
       },
     );
+  }
+
+  @override
+  void initState() {
+    var pro = Provider.of<BookingProvider>(context, listen: false);
+    for (var element in pro.selectedSeats) {
+      _priceItems.add(PriceItem(
+          name: "Seat ${element["seatNumber"]}",
+          quantity: 1,
+          itemCostCents: 10000));
+    }
+    super.initState();
   }
 
   @override
@@ -245,6 +255,7 @@ class _PaymentPageState extends State<PaymentPage> {
         ? () => Navigator.of(context).pop()
         : null;
 
+    var pro = Provider.of<ProfileProvider>(context, listen: false);
     return Scaffold(
       appBar: null,
       body: Align(
@@ -270,10 +281,16 @@ class _PaymentPageState extends State<PaymentPage> {
                         )),
                     GestureDetector(
                       onTap: () {
-                        bookTicket();
+                        if(pro.profileName.isNotEmpty){
+                          bookTicket();
+                        }
+                        else{
+                          Navigator.of(context).pushNamed("SignIn");
+                        }
+
                       },
                       child: customButton(
-                        "Book",
+                        pro.profileName.isNotEmpty ? "Book" : "Login",
                         isAddPage: kIsWeb ? 130 : 80.sp,
                       ),
                     ),
@@ -284,7 +301,29 @@ class _PaymentPageState extends State<PaymentPage> {
               Align(
                 alignment: Alignment.center,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 32.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                      "This seats will be on hold for 10 minutes. Please complete the payment within this time.",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                          fontSize: kIsWeb ? 14 : 10.sp, color: Colors.grey)),
+                ),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: SizedBox(
+                    height: 60,
+                    width: 60,
+                    child: CountdownTimerPage(),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Text(
                       "This is a demo payment page. No real transactions will be made. Press 'Book' to confirm the booking.",
                       textAlign: TextAlign.center,
@@ -345,5 +384,60 @@ class DemoOnlyStuff {
       provideSomeTimeBeforeReset(_payBtnKey);
       return;
     });
+  }
+}
+
+class CountdownTimerPage extends StatefulWidget {
+  @override
+  _CountdownTimerPageState createState() => _CountdownTimerPageState();
+}
+
+class _CountdownTimerPageState extends State<CountdownTimerPage> {
+  Timer? _timer;
+  int _start = 10 * 60; // 10 minutes in seconds
+
+  void startTimer() {
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_start < 1) {
+          _timer!.cancel();
+        } else {
+          _start--;
+        }
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    startTimer(); // Start the timer as soon as the widget is initialized
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    int minutes = _start ~/ 60;
+    int seconds = _start % 60;
+
+    return Scaffold(
+      body: SizedBox(
+        height: 100,
+        width: 200,
+        child: Text(
+          '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
+          style: TextStyle(fontSize: 20),
+        )
+      ),
+    );
   }
 }

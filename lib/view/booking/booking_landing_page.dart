@@ -1,7 +1,9 @@
 import 'dart:ui';
+import 'package:assessment_3/provider/booking_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,7 +13,7 @@ import '../../../Utils/custom_loading.dart';
 import '../../../provider/profile_provider.dart';
 import '../Auth/widgets/snackBar.dart';
 
-enum WhyFarther { delete, edit }
+enum WhyFarther { cancel, edit }
 
 class BookingLandingPage extends StatefulWidget {
   const BookingLandingPage({Key? key}) : super(key: key);
@@ -52,7 +54,10 @@ class _BookingLandingPageState extends State<BookingLandingPage> {
             return const Center(
                 child: Text(
               'You Have Not Booked Any Flight Yet!',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey),
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey),
             ));
           }
           return ListView.builder(
@@ -62,8 +67,10 @@ class _BookingLandingPageState extends State<BookingLandingPage> {
               return Ticket(
                 adults: data?.docs[index]["adults"],
                 teenagers: data?.docs[index]["teenagers"],
+                id: data?.docs[index].id ?? "",
                 babies: data?.docs[index]["babies"],
                 flightNumber: data?.docs[index]["flightNumber"],
+                departureTime: data?.docs[index]["departureDate"],
                 selectedSeats: (data?.docs[index]["selectedSeats"] as List)
                     .map((item) => Map<String, String>.from(item))
                     .toList(),
@@ -98,49 +105,29 @@ class _BookingLandingPageState extends State<BookingLandingPage> {
   }
 }
 
-Future<void> _showMyDialog(BuildContext context, String id) async {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Delete Notice'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: const <Widget>[
-              Text('Do you want to delete this notice'),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Ok'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
 class Ticket extends StatelessWidget {
   final int adults;
   final int teenagers;
   final int babies;
   final String flightNumber;
+  final String id;
+  final String departureTime;
   final List<Map<String, String>> selectedSeats;
 
   Ticket({
     required this.adults,
     required this.teenagers,
+    required this.id,
     required this.babies,
     required this.flightNumber,
     required this.selectedSeats,
+    required this.departureTime,
   });
 
   @override
   Widget build(BuildContext context) {
+    var pro = Provider.of<ProfileProvider>(context, listen: false);
+    var pro2 = Provider.of<BookingProvider>(context, listen: false);
     return Container(
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.all(20),
@@ -148,9 +135,73 @@ class Ticket extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Flight Number: $flightNumber',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Container(
+            color: Colors.grey.withOpacity(0.1),
+            padding: EdgeInsets.all(10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Flight Number: $flightNumber",
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold)),
+                const Spacer(),
+                PopupMenuButton<WhyFarther>(
+                  onSelected: (WhyFarther item) async {
+                    if (item == WhyFarther.cancel) {
+                      if (DateTime.parse(departureTime)
+                              .difference(DateTime.now())
+                              .inHours >
+                          72) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Are you sure?'),
+                              content:
+                                  Text('Do you want to cancel your booking?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text('Cancel'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text('OK'),
+                                  onPressed: () {
+                                    pro2.deleteBooking(
+                                        id, selectedSeats, flightNumber);
+                                    Navigator.of(context).pop();
+                                    snackBar(context,
+                                        "Your booking has been cancelled successfully! Payment will be refunded within 7 working days.");
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        snackBar(context, "you can not cancel it");
+                      }
+                    } else {
+                      snackBar(context, "Not Implemented Yet");
+                    }
+                  },
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<WhyFarther>>[
+                    const PopupMenuItem<WhyFarther>(
+                      value: WhyFarther.cancel,
+                      child: Text('Cancel'),
+                    ),
+                    const PopupMenuItem<WhyFarther>(
+                      value: WhyFarther.edit,
+                      child: Text('Edit'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           SizedBox(height: 10),
           Text('Adults: $adults'),
@@ -166,6 +217,19 @@ class Ticket extends StatelessWidget {
               return Text('Seat Number: ${seat['seatNumber']}');
             }).toList(),
           ),
+          Text(
+            "Remaining time to departure: ${DateTime.parse(departureTime).difference(DateTime.now()).inDays} days and ${DateTime.parse(departureTime).difference(DateTime.now()).inHours - (DateTime.parse(departureTime).difference(DateTime.now()).inDays * 24)} hours",
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+          if (DateTime.parse(departureTime).difference(DateTime.now()).inHours <
+              72)
+            const Text(
+              "This flight cannot be cancelled within 72 hours of departure due to airline policy.",
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.redAccent),
+            ),
         ],
       ),
     );

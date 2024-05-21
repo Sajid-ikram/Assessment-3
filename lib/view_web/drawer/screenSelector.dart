@@ -1,4 +1,5 @@
 import 'package:assessment_3/provider/drawerProvider.dart';
+import 'package:assessment_3/provider/profile_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +13,7 @@ import '../../view/booking/booking_stage/init_page.dart';
 import '../../view/booking/booking_stage/number_of_passenger1.dart';
 import '../../view/booking/plane1.dart';
 import '../../view/booking/plane2.dart';
+import '../../view/dashboard/dashboard.dart';
 import '../../view/flight/flight.dart';
 
 Widget screenSelector(int flx, BuildContext context) {
@@ -32,7 +34,7 @@ Widget screenSelector(int flx, BuildContext context) {
           switch (provider.screenName) {
             case "Dashboard":
               {
-                return _buildContainer(provider.screenName);
+                return Dashboard();
               }
             case "Flights":
               {
@@ -70,12 +72,13 @@ Widget screenSelector(int flx, BuildContext context) {
 }
 
 Center _logOutMethod(BuildContext context) {
+  var  pro = Provider.of<ProfileProvider>(context, listen: false);
   return Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Do you want to Logout',
+          pro.profileName.isNotEmpty? 'Do you want to Logout' : 'You are not logged in',
           style: TextStyle(
             color: primaryColor,
             fontSize: 26,
@@ -86,10 +89,16 @@ Center _logOutMethod(BuildContext context) {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.of(context).pushNamed("SignIn");
-            Provider.of<Authentication>(context, listen: false).signOut();
+            if(pro.profileName.isNotEmpty){
+              Navigator.of(context).pushNamed("SignIn");
+              Provider.of<Authentication>(context, listen: false).signOut();
+              Provider.of<DrawerProvider>(context, listen: false).changeScreen("Dashboard");
+            }
+            else{
+              Navigator.of(context).pushNamed("SignIn");
+            }
           },
-          child: customButton("SignIn"),
+          child: SizedBox(width: 200,child: customButton( pro.profileName.isNotEmpty?"Logout" : "Login")),
         ),
       ],
     ),

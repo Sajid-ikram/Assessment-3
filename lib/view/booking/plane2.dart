@@ -142,7 +142,7 @@ class _Plane2State extends State<Plane2> {
       List<Map<String, String>> selectedSeats = [];
       for (int i = 0; i < 35; i++) {
         for (int j = 0; j < 6; j++) {
-          if (seatStatus[i][j]) {
+          if (seatStatus[i][j] && !bookedSeats.contains("${i + 1}${String.fromCharCode(65 + j)}")) {
             selectedSeats.add({
               "row": "$i",
               "column": "$j",

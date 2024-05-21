@@ -32,12 +32,11 @@ class SingleFlight extends StatelessWidget {
       onTap: () {
         Provider.of<DrawerProvider>(context, listen: false)
             .changeScreen("Booking");
-        Provider.of<BookingProvider>(context, listen: false)
-            .changeScreenNumber(1);
-        Provider.of<BookingProvider>(context, listen: false).planeNumber =
-            int.parse(flight.travelDuration ?? "1");
-        Provider.of<BookingProvider>(context, listen: false).flightNumber =
-            flight.flightNumber ?? "";
+        var pro = Provider.of<BookingProvider>(context, listen: false);
+        pro.changeScreenNumber(1);
+        pro.planeNumber = int.parse(flight.travelDuration ?? "1");
+        pro.flightNumber = flight.flightNumber ?? "";
+        pro.departureDate = flight.departureTime ?? "";
       },
       child: Container(
         width: 350.w,
@@ -129,18 +128,7 @@ class SingleFlight extends StatelessWidget {
                           Column(
                             children: [
                               Text(
-                                DateTime.parse(flight.arrivalTime!)
-                                        .difference(DateTime.parse(
-                                            flight.departureTime!))
-                                        .inHours
-                                        .toString() +
-                                    "h " +
-                                    DateTime.parse(flight.arrivalTime!)
-                                        .difference(DateTime.parse(
-                                            flight.departureTime!))
-                                        .inMinutes
-                                        .toString() +
-                                    "m",
+                                "${DateTime.parse(flight.arrivalTime!).difference(DateTime.parse(flight.departureTime!)).inHours}h ${DateTime.parse(flight.arrivalTime!).difference(DateTime.parse(flight.departureTime!)).inMinutes}m",
                                 style: TextStyle(
                                   fontSize: kIsWeb ? 14 : 10.sp,
                                   color: Colors.grey,

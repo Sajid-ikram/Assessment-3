@@ -1,4 +1,4 @@
-
+import 'package:assessment_3/provider/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -6,8 +6,8 @@ import '../../Utils/app_colors.dart';
 import '../../provider/drawerProvider.dart';
 
 
-
 AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) {
+  var pro = Provider.of<ProfileProvider>(context, listen: false);
   return AppBar(
     elevation: 0,
     leading: Consumer<DrawerProvider>(
@@ -17,7 +17,7 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) {
             key.currentState!.openDrawer();
           },
           icon: Icon(Icons.menu),
-        ): Icon(Icons.admin_panel_settings);
+        ) : Icon(Icons.admin_panel_settings);
       },
     ),
 
@@ -40,10 +40,23 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) {
           width: 24,
         ),
 
-        Text(
-          "Sajid Ikram",
-          style: TextStyle(
-              color: lightGrey, fontWeight: FontWeight.normal, fontSize: 15),
+        Consumer<ProfileProvider>(
+          builder: (context, provider, child) {
+            return GestureDetector(
+              onTap: () {
+                if (pro.profileName.isEmpty) {
+                  Navigator.of(context).pushNamed("SignIn");
+                }
+              },
+              child: Text(
+                pro.profileName.isEmpty ? "SignIn" : pro.profileName,
+                style: TextStyle(
+                    color: lightGrey,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 15),
+              ),
+            );
+          },
         ),
         const SizedBox(
           width: 16,

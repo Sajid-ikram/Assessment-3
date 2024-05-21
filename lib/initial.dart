@@ -37,7 +37,7 @@ class _MiddleOfHomeAndSignInState extends State<MiddleOfHomeAndSignIn> {
           return  SiteLayout();
         }
         return snapshot.data == null
-            ? const SignIn()
+            ?  SiteLayout()
             : const Verification();
       },
     );

@@ -82,7 +82,7 @@ class _PassengersDetailsState extends State<PassengersDetails> {
                 Align(
                   alignment: Alignment.center,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 32.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
                         "I'm not storing any passenger information to keep things simpler for this assignment.",
                         textAlign: TextAlign.center,
