@@ -50,6 +50,8 @@ class FlightClient {
     var url = Uri.parse(Api_Endpoints.FLIGHT + "?skip=$skip");
     try {
       var response = await http.get(url);
+      print(response.body);
+      print("++++++++++++++++++++++++++++++ response.body");
       var listOfFlight = jsonDecode(response.body) as List;
       if (response.statusCode == 200) {
         return listOfFlight

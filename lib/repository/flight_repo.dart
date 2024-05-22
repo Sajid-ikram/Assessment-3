@@ -68,6 +68,7 @@ class FlightRepo {
 
       return response;
     } catch (err) {
+      print("Something went wrong ------------------------------------------- 1 11");
       print(err);
       print("Something went wrong -------------------------------------------");
       throw Exception("Something went wrong");
